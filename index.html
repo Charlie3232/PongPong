@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>小古力療癒屋</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 18% 12%, rgba(255, 208, 226, .66), transparent 30%),
+        radial-gradient(circle at 82% 18%, rgba(205, 196, 255, .58), transparent 30%),
+        linear-gradient(135deg, #fff7ef, #f6edf9 52%, #eef8ef);
+      color: #4f3f46;
+      font-family: "Microsoft JhengHei", "Noto Sans TC", system-ui, sans-serif;
+    }
+
+    .phone {
+      width: min(430px, 100vw);
+      aspect-ratio: 1024 / 1536;
+      max-height: 100vh;
+      position: relative;
+      overflow: hidden;
+      border-radius: min(28px, 4vw);
+      background: url("room-bg.png") center / cover no-repeat;
+      box-shadow: 0 26px 78px rgba(76, 58, 83, .28);
+    }
+
+    .speech {
+      position: absolute;
+      left: 5.5%;
+      right: 5.5%;
+      top: 3.2%;
+      z-index: 8;
+      min-height: 72px;
+      padding: 16px 18px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      border-radius: 26px;
+      background: rgba(255, 247, 241, .94);
+      border: 2px solid rgba(255, 166, 192, .74);
+      color: #69494f;
+      font-size: clamp(18px, 4.4vw, 23px);
+      font-weight: 900;
+      line-height: 1.35;
+      box-shadow: 0 14px 32px rgba(101, 65, 82, .2);
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: .22s ease;
+      pointer-events: none;
+    }
+
+    .speech.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .character-wrap {
+      position: absolute;
+      left: 50%;
+      top: 33.5%;
+      z-index: 3;
+      width: 29%;
+      transform: translateX(-50%);
+      transform-origin: 50% 88%;
+      pointer-events: none;
+      filter: drop-shadow(0 24px 18px rgba(66, 48, 68, .26));
+    }
+
+    .character {
+      display: block;
+      width: 100%;
+      transform-origin: 50% 88%;
+      animation: walkInPlace .52s ease-in-out infinite;
+    }
+
+    .character-wrap.walk-left { animation: laneLeft 2.4s ease-in-out infinite alternate; }
+    .character-wrap.walk-right { animation: laneRight 2.4s ease-in-out infinite alternate; }
+    .character-wrap.react .character { animation: reactBounce .78s ease; }
+
+    @keyframes laneLeft {
+      from { transform: translateX(calc(-50% - 18px)); }
+      to { transform: translateX(calc(-50% + 18px)); }
+    }
+
+    @keyframes laneRight {
+      from { transform: translateX(calc(-50% + 18px)); }
+      to { transform: translateX(calc(-50% - 18px)); }
+    }
+
+    @keyframes walkInPlace {
+      0%, 100% { transform: translateY(0) rotate(-.35deg); }
+      50% { transform: translateY(-5px) rotate(.35deg); }
+    }
+
+    @keyframes reactBounce {
+      0% { transform: translateY(0) scale(1); }
+      40% { transform: translateY(-12px) scale(1.03); }
+      70% { transform: translateY(2px) scale(.99); }
+      100% { transform: translateY(0) scale(1); }
+    }
+
+    .tool {
+      position: absolute;
+      left: 50%;
+      top: 34%;
+      z-index: 6;
+      opacity: 0;
+      pointer-events: none;
+      filter: drop-shadow(0 10px 11px rgba(92, 54, 70, .28));
+    }
+
+    .tool img { display: block; width: 100%; }
+
+    .hand {
+      width: 250px;
+      transform: translate(-2%, -44%) rotate(-5deg);
+    }
+
+    .hammer {
+      width: 150px;
+      transform-origin: 24% 82%;
+      transform: translate(2%, -54%) rotate(-48deg);
+    }
+
+    .hand.show { animation: handPat 1.05s ease forwards; }
+    .hammer.show { animation: hammerBonk .9s ease forwards; }
+
+    @keyframes handPat {
+      0% { opacity: 0; transform: translate(22%, -75%) rotate(-8deg); }
+      22% { opacity: 1; }
+      44% { opacity: 1; transform: translate(-2%, -45%) rotate(-5deg); }
+      60% { opacity: 1; transform: translate(-2%, -38%) rotate(-4deg); }
+      78% { opacity: 1; transform: translate(-2%, -45%) rotate(-5deg); }
+      100% { opacity: 0; transform: translate(12%, -70%) rotate(-8deg); }
+    }
+
+    @keyframes hammerBonk {
+      0% { opacity: 0; transform: translate(30%, -90%) rotate(-78deg) scale(.9); }
+      18% { opacity: 1; }
+      42% { opacity: 1; transform: translate(2%, -54%) rotate(-14deg) scale(1.03); }
+      54% { opacity: 1; transform: translate(2%, -46%) rotate(4deg) scale(1.04); }
+      72% { opacity: 1; transform: translate(14%, -70%) rotate(-48deg) scale(.98); }
+      100% { opacity: 0; transform: translate(30%, -90%) rotate(-78deg) scale(.9); }
+    }
+
+    .hearts {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .hearts.show { opacity: 1; }
+
+    .hearts span {
+      position: absolute;
+      color: #ff6f9f;
+      font-size: 28px;
+      animation: floatHeart 1.2s ease-in-out infinite;
+      text-shadow: 0 2px 0 rgba(255,255,255,.92);
+    }
+
+    .hearts span:nth-child(1) { left: 37%; top: 28%; }
+    .hearts span:nth-child(2) { left: 63%; top: 29%; animation-delay: .18s; }
+    .hearts span:nth-child(3) { left: 45%; top: 42%; animation-delay: .34s; }
+
+    @keyframes floatHeart {
+      50% { transform: translateY(-10px) scale(1.08); }
+    }
+
+    .controls {
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      bottom: 4.6%;
+      z-index: 7;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .control {
+      min-height: 76px;
+      border: 2px solid rgba(255,255,255,.76);
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(255, 247, 241, .95), rgba(255, 228, 232, .92));
+      box-shadow: 0 12px 28px rgba(103, 75, 83, .18);
+      color: #5f424b;
+      font: inherit;
+      font-size: 20px;
+      font-weight: 1000;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      gap: 5px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .control span {
+      font-size: 30px;
+      line-height: 1;
+    }
+
+    @media (max-width: 460px) {
+      .phone { border-radius: 0; }
+      .hand { width: 58vw; }
+      .hammer { width: 34vw; }
+    }
+  </style>
+</head>
+<body>
+  <main class="phone" aria-label="小古力療癒屋">
+    <div class="speech" id="speech">妳今天也很棒</div>
+
+    <div class="character-wrap walk-left" id="characterWrap" aria-hidden="true">
+      <img class="character" id="character" src="walk-a.png" alt="">
+    </div>
+
+    <div class="tool hand" id="handEffect"><img src="hand.png" alt=""></div>
+    <div class="tool hammer" id="hammerEffect"><img src="hammer.png" alt=""></div>
+    <div class="hearts" id="hearts"><span>♥</span><span>♥</span><span>♥</span></div>
+
+    <div class="controls">
+      <button class="control" id="petBtn"><span>✋</span>摸頭</button>
+      <button class="control" id="bonkBtn"><span>🔨</span>敲我</button>
+    </div>
+  </main>
+
+  <script>
+    const character = document.getElementById('character');
+    const characterWrap = document.getElementById('characterWrap');
+    const speech = document.getElementById('speech');
+    const handEffect = document.getElementById('handEffect');
+    const hammerEffect = document.getElementById('hammerEffect');
+    const hearts = document.getElementById('hearts');
+
+    const positiveQuotes = [
+      '妳今天也很棒',
+      '妳笑起來最可愛',
+      '妳的節奏剛剛好',
+      '今天的妳很閃亮',
+      '妳值得好多喜歡',
+      '我一直站在妳這邊'
+    ];
+
+    const apologyQuotes = [
+      '對不起嘛，抱一下好不好',
+      '我乖乖的，給妳摸摸',
+      '原諒我嘛，我裝可愛',
+      '我補一個大大的愛心',
+      '我會更可愛一點'
+    ];
+
+    let walkFrame = 0;
+    let reacting = false;
+
+    function randomItem(items) {
+      return items[Math.floor(Math.random() * items.length)];
+    }
+
+    function showSpeech(text) {
+      speech.textContent = text;
+      speech.classList.add('show');
+      clearTimeout(showSpeech.timer);
+      showSpeech.timer = setTimeout(() => speech.classList.remove('show'), 1800);
+    }
+
+    function showHearts() {
+      hearts.classList.add('show');
+      clearTimeout(showHearts.timer);
+      showHearts.timer = setTimeout(() => hearts.classList.remove('show'), 1200);
+    }
+
+    function playTool(tool) {
+      tool.classList.remove('show');
+      void tool.offsetWidth;
+      tool.classList.add('show');
+      clearTimeout(playTool.timer);
+      playTool.timer = setTimeout(() => tool.classList.remove('show'), 1100);
+    }
+
+    function setReaction(src, duration = 1450) {
+      reacting = true;
+      characterWrap.classList.add('react');
+      character.src = src;
+      clearTimeout(setReaction.timer);
+      setReaction.timer = setTimeout(() => {
+        characterWrap.classList.remove('react');
+        reacting = false;
+        character.src = walkFrame % 2 === 0 ? 'walk-a.png' : 'walk-b.png';
+      }, duration);
+    }
+
+    setInterval(() => {
+      if (reacting) return;
+      walkFrame += 1;
+      character.src = walkFrame % 2 === 0 ? 'walk-a.png' : 'walk-b.png';
+      characterWrap.classList.toggle('walk-left', walkFrame % 4 < 2);
+      characterWrap.classList.toggle('walk-right', walkFrame % 4 >= 2);
+    }, 460);
+
+    document.getElementById('petBtn').addEventListener('click', () => {
+      playTool(handEffect);
+      showHearts();
+      setReaction('happy.png');
+      showSpeech(randomItem(positiveQuotes));
+    });
+
+    document.getElementById('bonkBtn').addEventListener('click', () => {
+      playTool(hammerEffect);
+      setReaction('cute.png');
+      showSpeech(randomItem(apologyQuotes));
+    });
+  </script>
+</body>
+</html>
